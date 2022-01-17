@@ -1,0 +1,23 @@
+{
+  "name": "Purolator Parser",
+  "description": "Automatically fill address into purolator webform",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": [
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://localhost/index.html"],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
