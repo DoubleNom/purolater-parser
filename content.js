@@ -1,9 +1,6 @@
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    console.log(msg)
     fill(msg.contact)
 })
-
-console.log("content")
 
 function fill(contact) {
     console.log(contact)
@@ -16,13 +13,13 @@ function fill(contact) {
         number: "ctl00_CPPC_ToAd_txtStreetNumber",
         street: "ctl00_CPPC_ToAd_txtStreetName",
         email: "ctl00_CPPC_ToAd_txtEmail",
+        phoneArea: "ctl00_CPPC_ToAd_txtPhoneArea",
+        phoneNumber: "ctl00_CPPC_ToAd_txtPhone",
+        unit: "ctl00_CPPC_ToAd_txtAddress2"
     }
     for (const id in purolatorId) {
-        console.log(id)
-        console.log(purolatorId[id])
+        if (!(id in contact)) continue
         let field = document.getElementById(purolatorId[id])
-        console.log(field)
-        console.log(contact[id])
         field.value = contact[id]
     }
 }
