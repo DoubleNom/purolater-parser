@@ -15,7 +15,7 @@
     {
       "matches": [
         "http://localhost/index.html",
-        "https://*.purolator.com/*"
+        "https://eshiponline.purolator.com/ShipOnline/shipment/shipment.aspx"
       ],
       "js": [
         "/src/content.js"
