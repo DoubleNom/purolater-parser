@@ -1,0 +1,13 @@
+Un numéro de téléphone doit impérativement être composé de 10 à 11 chiffres
+les caratères ( ) - + et les espaces sont automatiquement ignorés
+l'indicatif du pays, si présent, doit impérativement être celui de l'amérique du nord (+1)
+
+Exemple de numéro de téléphone supportés
+XXX XXX XXXX
+XXX XXXXXXX
+XXXXXXXXXX
+(XXX) XXX-XXXX
+(XXX)-XXX-XXXX
+(XXX)-(XXX-XXXX)
++1 (XXX) XXX XXXX
+1 XXX XXX XXXX

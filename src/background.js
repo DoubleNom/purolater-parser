@@ -1,17 +1,18 @@
-chrome.runtime.onMessage.addListener(async (msg) => {
-    const contact = parse(msg.raw)
-    if (contact == null) return
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {contact: contact})
+if(typeof chrome !== 'undefined') {
+    chrome.runtime.onMessage.addListener(async (msg) => {
+        const contact = parse(msg.raw)
+        if (contact == null) return
+        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {contact: contact})
+        })
     })
-})
+}
 
 function sendPopup(str) {
     console.log(str)
 }
 
 function parse(str) {
-
     let reResults = str.split('\t');
     let fields = {}
 
@@ -42,8 +43,8 @@ function parse(str) {
             console.log(match)
             console.log(str)
         }
-        fields.phoneArea = match[1].replaceAll("(","").replaceAll(")","")
-        fields.phoneNumber = match[2].replaceAll("(","").replaceAll(")","")
+        fields.phoneArea = match[1].replaceAll("(", "").replaceAll(")", "")
+        fields.phoneNumber = match[2].replaceAll("(", "").replaceAll(")", "")
         // add missing hypen if required
         if (fields.phoneNumber.length === 7) {
             fields.phoneNumber = fields.phoneNumber.slice(0, 3) + '-' + fields.phoneNumber.slice(3)
@@ -83,8 +84,8 @@ function parseAddress(fields) {
     // Check if it's a number with unit
     else if (initialField.match(reNumberWithUnit)) {
         const split = initialField.split('-')
-        fields.number = split[0]
-        fields.unit = split[1]
+        fields.number = split[1]
+        fields.unit = split[0]
     } else if (initialField.match(reSimpleNumberWithAddress)) {
         const split = initialField.split(' ')
         if (hasSpaceSuffix) {
@@ -103,9 +104,6 @@ function parseAddress(fields) {
             splitAddress[1] = splitAddress.slice(1).join(" ")
         }
         const splitNumbers = splitAddress[0].split('-')
-        console.log(initialField)
-        console.log(splitAddress)
-        console.log(splitNumbers)
         fields.street = splitAddress[1]
         fields.number = splitNumbers[1]
         fields.unit = splitNumbers[0]
@@ -126,7 +124,7 @@ function parseAddress(fields) {
         ++index
     }
     if ('unit' in fields) {
-        if(!!fields.unit.match(/^\d+$/gi)) {
+        if (!!fields.unit.match(/^\d+$/gi)) {
             fields.unit = "apt " + fields.unit
         }
     }
@@ -138,4 +136,13 @@ function parseAddress(fields) {
         fields[rf[i]] = rs[i].trim()
     }
 
+    // Format zip
+    fields.zip = fields.zip.toUpperCase().replaceAll(" ", "")
+    fields.zip = fields.zip.slice(0, 3) + " " + fields.zip.slice(3, 6)
+
+    return fields
+}
+
+if (typeof module !== 'undefined') {
+    module.exports.parseAddress = parseAddress
 }

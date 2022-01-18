@@ -1,0 +1,42 @@
+Une adresse est formée des champs suivants
+Numéro de rue
+Nom de rue
+Appartement
+Ville
+Province	-> Deux lettres majuscules
+Pays		-> Deux lettres majuscules (indicatif pays: ISO 3166)
+Code postal
+
+sauf exceptions, tous ces champs doivent être présenté dans cet ordre et être séparés par des virgules
+Les caratères avec accents sont autorisés
+l'adresse n'est pas sensible à la casse
+
+Le numéro de rue peut s'écrire des façons suivantes
+1234
+1324b
+1324bis
+1324 bis
+1324t
+1234ter
+1234 ter
+
+il est autorisé que le numero de rue et le nom de rue ne soient pas séparés par une virgule
+1234 rue du village
+1324, rue du village
+
+Le numéro d'appartement est optionnel
+Le numéro d'appartement peut s'écrire des façons suivantes
+apt 42
+apt42
+app 42
+app42
+# 42
+#42
+unit 42
+unit42
+
+le numéro d'appartement peut se trouver avant le numéro de rue, mais ils doivent impérativement être séparé par un symbole "-", sans espace
+42-1234
+42-1324 rue du machin
+
+le code postal doit être impérativement composé de 6 ou 7 caractères formattés comme tels: A1A 1A1

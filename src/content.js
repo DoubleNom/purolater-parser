@@ -1,4 +1,4 @@
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (msg) {
     fill(msg.contact)
 })
 
