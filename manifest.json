@@ -9,7 +9,11 @@
     "48": "/icons/favicon_48.png"
   },
   "permissions": [
-    "tabs"
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost/index.html",
+    "https://eshiponline.purolator.com/ShipOnline/shipment/shipment.aspx"
   ],
   "content_scripts": [
     {
