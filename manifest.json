@@ -1,7 +1,7 @@
 {
   "name": "Purolator Parser",
   "description": "Automatically fill address into purolator webform",
-  "version": "0.3",
+  "version": "0.4",
   "manifest_version": 3,
   "icons": {
     "16": "/icons/favicon_16.png",
@@ -12,7 +12,8 @@
     "scripting"
   ],
   "host_permissions": [
-    "http://localhost/index.html",
+    "http://localhost/return/",
+    "http://localhost/send/",
     "https://eshiponline.purolator.com/ShipOnline/shipment/shipment.aspx"
   ],
   "background": {

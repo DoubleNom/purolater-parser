@@ -1,22 +1,43 @@
 if (typeof chrome !== 'undefined') {
-    chrome.runtime.onMessage.addListener(async (msg, sender) => {
-        // Get input from user by popup.js
-        const contact = parse(msg.raw)
-        if (contact == null) return
-        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.scripting.executeScript({
-                target: {tabId: activeTab.id},
-                func: fill,
-                args: [contact]
-            })
-        });
-    })
+    chrome.runtime.onMessage.addListener(onMessageCallback)
+}
+
+function onMessageCallback(msg, _, callback) {
+    if(callback != null) callback();
+
+    // Get input from user by popup.js
+    sendPopup(msg.raw);
+    const contact = parse(msg.raw)
+    if (contact == null) {
+        sendPopup("Contact is null, aborting");
+        return false;
+    }
+    sendPopup(contact);
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        var activeTab = tabs[0];
+        chrome.scripting.executeScript({
+            target: {tabId: activeTab.id},
+            func: fill,
+            args: [contact]
+        })
+    });
+    return false;
+}
+
+function print(obj) {
+    console.log(obj);
 }
 
 function sendPopup(str) {
-    // Improve to display error to user
-    console.log(str)
+    console.log(str);
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        var activeTab = tabs[0];
+        chrome.scripting.executeScript({
+            target: {tabId: activeTab.id},
+            func: print,
+            args: [str]
+        })
+    });
 }
 
 function parse(str) {
@@ -26,8 +47,8 @@ function parse(str) {
     // Initial parsing
     if (reResults.length !== 4) {
         sendPopup("Invalid number of groups")
-        console.log(str)
-        console.log(reResults)
+        sendPopup(str)
+        sendPopup(reResults)
         return null
     }
     fields.name = reResults[0]
@@ -36,8 +57,8 @@ function parse(str) {
     fields.email = reResults[3]
     if (!('name' in fields)) {
         sendPopup("No information found")
-        console.log(str)
-        console.log(fields)
+        sendPopup(str)
+        sendPopup(fields)
         return null
     }
 
@@ -47,8 +68,8 @@ function parse(str) {
     for (const match of reResults) {
         if (match.length !== 3) {
             sendPopup("Invalid phone number")
-            console.log(match)
-            console.log(str)
+            sendPopup(match)
+            sendPopup(str)
         }
         fields.phoneArea = match[1].replaceAll("(", "").replaceAll(")", "")
         fields.phoneNumber = match[2].replaceAll("(", "").replaceAll(")", "")
@@ -59,8 +80,8 @@ function parse(str) {
     }
     if (!('phoneArea' in fields)) {
         sendPopup("Invalid phone number")
-        console.log(str)
-        console.log(fields.phone)
+        sendPopup(str)
+        sendPopup(fields.phone)
     }
 
     parseAddress(fields)
@@ -72,7 +93,7 @@ function parseAddress(fields) {
     const addressFields = fields.address.split(",")
     if (addressFields.length < 4) {
         sendPopup("Invalid address, too few fields")
-        console.log(fields.address)
+        sendPopup(fields.address)
         return
     }
 
@@ -178,11 +199,11 @@ function fill(contact) {
         unit: "ctl00_CPPC_FrAd_txtAddress2"
     }
     const purolatorIds = [purolatorIdSend, purolatorIdFrom];
-    for(const purolatorId of purolatorIds) {
+    for (const purolatorId of purolatorIds) {
         for (const id in purolatorId) {
             if (!(id in contact)) continue
             let field = document.getElementById(purolatorId[id])
-            if(field != null) field.value = contact[id]
+            if (field != null) field.value = contact[id]
         }
     }
 }
