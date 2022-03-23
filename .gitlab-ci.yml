@@ -1,0 +1,14 @@
+extension:
+  stage: deploy
+  tags: [windows]
+  script: 
+    - echo "I have nothing to do"
+  artifacts:
+    untracked: false
+    expire_in: 30 days
+    name: "extension"
+    paths:
+      - "docs"
+      - "icons"
+      - "src"
+      - "manifest.json"
