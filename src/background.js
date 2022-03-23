@@ -16,7 +16,7 @@ function onMessageCallback(msg, _, callback) {
     sendPopup(msg.raw);
     const contact = parse(msg.raw)
     if (contact == null) {
-        sendPopup(i18nString("Contact is null, aborting", "Contact est vide, annulation"));
+        sendPopup(i18nString("Contact is null, aborting", "Contact est vide, annulation"), true);
         return false;
     }
     sendPopup(contact);
@@ -35,11 +35,14 @@ function onMessageCallback(msg, _, callback) {
     return false;
 }
 
-function print(obj) {
-    console.log(obj);
+function print(obj, isAlert = false) {
+    if(isAlert) {
+        alert(obj)
+    }
+    console.log(obj)
 }
 
-function sendPopup(str) {
+function sendPopup(str, isAlert = false) {
     console.log(str);
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         const activeTab = tabs[0];
@@ -50,7 +53,7 @@ function sendPopup(str) {
         chrome.scripting.executeScript({
             target: {tabId: activeTab.id},
             func: print,
-            args: [str]
+            args: [str, isAlert]
         })
     });
 }
@@ -61,7 +64,7 @@ function parse(str) {
 
     // Initial parsing
     if (reResults.length !== 4) {
-        sendPopup(i18nString("Invalid number of groups", "Nombre de groupe erroné"))
+        sendPopup(i18nString("Invalid number of groups", "Nombre de groupe erroné"), true)
         sendPopup(str)
         sendPopup(reResults)
         return null
@@ -71,7 +74,7 @@ function parse(str) {
     fields.address = reResults[2]
     fields.email = reResults[3]
     if (!('name' in fields)) {
-        sendPopup(i18nString("No information found", "Aucune information trouvée"))
+        sendPopup(i18nString("No information found", "Aucune information trouvée"), true)
         sendPopup(str)
         sendPopup(fields)
         return null
@@ -82,7 +85,7 @@ function parse(str) {
     reResults = fields.phone.matchAll(rePhone)
     for (const match of reResults) {
         if (match.length !== 3) {
-            sendPopup(i18nString("Invalid phone number", "Numéro de téléphone invalide"))
+            sendPopup(i18nString("Invalid phone number", "Numéro de téléphone invalide"), true)
             sendPopup(match)
             sendPopup(str)
         }
@@ -94,7 +97,7 @@ function parse(str) {
         }
     }
     if (!('phoneArea' in fields)) {
-        sendPopup(i18nString("Invalid phone number", "Numéro de téléphone invalide"))
+        sendPopup(i18nString("Invalid phone number", "Numéro de téléphone invalide"), true)
         sendPopup(str)
         sendPopup(fields.phone)
     }
@@ -105,7 +108,7 @@ function parse(str) {
 function parseAddress(fields) {
     const addressFields = fields.address.split(",")
     if (addressFields.length < 4) {
-        sendPopup(i18nString("Invalid address, too few fields", "Adresse invalide, des champs sont manquants"))
+        sendPopup(i18nString("Invalid address, too few fields", "Adresse invalide, des champs sont manquants"), true)
         sendPopup(fields.address)
         return
     }
@@ -177,7 +180,7 @@ function parseAddress(fields) {
         if (rs[i] == null || rs[i] === "") {
             sendPopup(
                 i18nString(`Invalid address, ${rf[i]} field is missing. Check if the whole address is properly formatted`,
-                    `Adresse invalide, le champs ${rf[i]} est manquant. Vérifiez l'adresse complete si elle est correctement formatée`))
+                    `Adresse invalide, le champs ${rf[i]} est manquant. Vérifiez l'adresse complete si elle est correctement formatée`), true)
             return null
         }
         fields[rf[i]] = rs[i].trim()
