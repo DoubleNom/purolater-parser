@@ -5,7 +5,6 @@ if (typeof chrome !== 'undefined') {
         if (contact == null) return
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
             var activeTab = tabs[0];
-            console.log(`tab ID: ${activeTab.id}`)
             chrome.scripting.executeScript({
                 target: {tabId: activeTab.id},
                 func: fill,
