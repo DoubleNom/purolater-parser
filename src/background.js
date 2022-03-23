@@ -1,19 +1,17 @@
 if (typeof chrome !== 'undefined') {
-    let tab_id = 0
     chrome.runtime.onMessage.addListener(async (msg, sender) => {
-        if ('tab' in sender) {
-            // Get tab from content.js
-            tab_id = sender.tab.id
-        } else {
-            // Get input from user by popup.js
-            const contact = parse(msg.raw)
-            if (contact == null) return
+        // Get input from user by popup.js
+        const contact = parse(msg.raw)
+        if (contact == null) return
+        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+            var activeTab = tabs[0];
+            console.log(`tab ID: ${activeTab.id}`)
             chrome.scripting.executeScript({
-                target: {tabId: tab_id},
+                target: {tabId: activeTab.id},
                 func: fill,
                 args: [contact]
             })
-        }
+        });
     })
 }
 
@@ -154,7 +152,7 @@ function parseAddress(fields) {
 }
 
 function fill(contact) {
-    const purolatorId = {
+    const purolatorIdSend = {
         name: "ctl00_CPPC_ToAd_txtName",
         city: "ctl00_CPPC_ToAd_txtCity",
         country: "ctl00_CPPC_ToAd_ddlCountry",
@@ -167,10 +165,26 @@ function fill(contact) {
         phoneNumber: "ctl00_CPPC_ToAd_txtPhone",
         unit: "ctl00_CPPC_ToAd_txtAddress2"
     }
-    for (const id in purolatorId) {
-        if (!(id in contact)) continue
-        let field = document.getElementById(purolatorId[id])
-        field.value = contact[id]
+    const purolatorIdFrom = {
+        name: "ctl00_CPPC_FrAd_txtName",
+        city: "ctl00_CPPC_FrAd_txtCity",
+        country: "ctl00_CPPC_FrAd_ddlCountry",
+        zip: "ctl00_CPPC_FrAd_txtPostalZipCode",
+        province: "ctl00_CPPC_FrAd_ddlProvince",
+        number: "ctl00_CPPC_FrAd_txtStreetNumber",
+        street: "ctl00_CPPC_FrAd_txtStreetName",
+        email: "ctl00_CPPC_FrAd_txtEmail",
+        phoneArea: "ctl00_CPPC_FrAd_txtPhoneArea",
+        phoneNumber: "ctl00_CPPC_FrAd_txtPhone",
+        unit: "ctl00_CPPC_FrAd_txtAddress2"
+    }
+    const purolatorIds = [purolatorIdSend, purolatorIdFrom];
+    for(const purolatorId of purolatorIds) {
+        for (const id in purolatorId) {
+            if (!(id in contact)) continue
+            let field = document.getElementById(purolatorId[id])
+            if(field != null) field.value = contact[id]
+        }
     }
 }
 
